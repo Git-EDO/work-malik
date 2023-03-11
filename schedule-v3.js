@@ -9,9 +9,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let eventTeacher = ''
     let eventTeacherLink = ''
 
+    // Находим нужные дефолтные элементы на странице
     const defaultEventsRows = schedulePageData.querySelectorAll('.state-')
 
+    // Из каждого извлекаем необходимые данные...
     defaultEventsRows.forEach((row) => {
+      // Имя, ссылку, к какому тренингу и модулю относится
       const eventName = row.querySelector('a i').innerText.trim()
       const eventLink = row.querySelector('td:nth-child(2) a').href
       const eventTraining = row
@@ -25,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .split('.')[1]
         .replace(':', '')
         .trim()
+        // Если в событии указан преподаватель (бывает, что не указан), то достаём и эти данные
       if (row.querySelector('td:nth-child(3) a span.text')) {
         eventTeacher = row.querySelector(
           'td:nth-child(3) a span.text'
@@ -42,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
       let fullDate
       let fullDateAndDay
 
+      // GetCourse выдаёт данные в различных форматах: иногда в формате "Сб, 11 Мар 12:00", а иногда в формате "Сегодня, 12:00". Обрабатываем данные вариации ниже:
       if (eventFullDate.length == 2) {
         eventFullTime = String(eventFullDateAndTime.split(' ').slice(1, 2))
         fullDate = eventFullDate[0]
@@ -52,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fullDateAndDay =
           eventFullDate[0] + ', ' + eventFullDate.slice(1, 3).join(' ')
       }
-
+      // Создаём для каждого события отдельный объект JSON
       const eventItem = {
         fullDateAndDay,
         fullDate,
@@ -62,6 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
         eventTeacher,
         eventTeacherLink,
       }
+      // Если дата уже существует, то добавляем в имеющуюся, если нет, то создаём новую
       if (events.find((el) => el.fullDate == fullDate)) {
         const dateExist = events.find((el) => el.fullDate == fullDate)
         dateExist.eventsList.push({ eventName, eventLink, eventFullTime })
@@ -99,6 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
         })
       })
     } else {
+      // Если искомые события на странице не найдены (расписание не создано), добавляем соответствующее оповещение в виджет
       const noEvents = document.createElement('div')
       noEvents.classList.add('no-events-text')
       noEvents.innerText = 'Нет ближайших событий'
